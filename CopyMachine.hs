@@ -1,14 +1,19 @@
 import System.Directory
 import System.Environment   
 import System.FilePath (takeFileName, (</>))
+import System.IO
+import System.IO.Error
 
 main = do
     (fileToCopy:destination:xs) <- getArgs
-    copyFiles fileToCopy destination
+    copyFiles fileToCopy destination 
 
 copyFiles :: FilePath -> FilePath -> IO ()
-copyFiles fileToCopy relativeDir = do 
-    dir <- makeAbsolute relativeDir
+copyFiles fileToCopy destination = catchIOError (toTry fileToCopy destination) (handler fileToCopy destination)
+
+toTry :: FilePath -> FilePath -> IO ()
+toTry fileToCopy destination = do 
+    dir <- makeAbsolute destination
     thisDir <- listDirectory dir
     let newDirs = checkDirs thisDir
     let fileName = takeFileName fileToCopy
@@ -18,9 +23,10 @@ copyFiles fileToCopy relativeDir = do
     if newDirs == Nothing 
         then return ()
         else let (Just dirs) = newDirs in mapM_ (copyFiles fileToCopy) (map (dirPath ++) dirs) 
-            
-    
-            
+
+
+handler :: FilePath -> FilePath -> IOError -> IO ()
+handler _ _ e = putStrLn "\nAn exception!"
     
 isDir :: FilePath -> Bool
 isDir [] = True
