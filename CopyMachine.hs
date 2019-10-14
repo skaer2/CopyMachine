@@ -49,12 +49,9 @@ copyFilesMultiCopy fileToCopy depth destination numberOfCopies = catchIOError (c
             --then copyFile fileToCopy $ dir </> $ fileName ++
 
 multiCopy :: FilePath -> FilePath -> Int -> IO ()
-multiCopy fileToCopy destination numberOfCopies 
 multiCopy fileToCopy destination numberOfCopies = do
     absoluteDestination <- makeAbsolute destination
-    fileAlreadyExists <- doesFileExist fileToCopy
-        if fileAlreadyExists 
-            then copyFile fileToCopy $ absoluteDestination </> $ fileName ++ numberOfCopies
+    copyFile fileToCopy $ absoluteDestination </> $ fileName ++
 
 handler :: FilePath -> FilePath -> IOError -> IO ()
 handler _ _ e = putStrLn "\nAn exception!"
